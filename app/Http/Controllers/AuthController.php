@@ -35,12 +35,15 @@ class AuthController extends Controller
     {   
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:4',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users',
             'password' => 'required|min:4',
         ]);
    
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+            return response()->json([
+                'success' => false,
+                'message' => 'Input Format Incorrect! '
+            ], 400);        
         }
    
         $input = $request->all();

@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\DB;
 class CustomerController extends Controller
 {
     public function index()
-    {
+    {   
+
         $customer = User::paginate(10);
         return response()->json($customer,200);
     }
@@ -32,7 +33,10 @@ class CustomerController extends Controller
         'password' => 'required|min:4',
     ]);
     if($validator->fails()){
-    return $this->sendError('Validation Error.', $validator->errors());       
+        return response()->json([
+            'success' => false,
+            'message' => 'Input Format Incorrect! '
+        ], 400);        
     }
     $customer = User::create($input);
     return response()->json([
@@ -77,7 +81,10 @@ class CustomerController extends Controller
         'name' => 'required',
         ]);
         if($validator->fails()){
-        return $this->sendError('Validation Error.', $validator->errors());       
+            return response()->json([
+                'success' => false,
+                'message' => 'Input Format Incorrect! '
+            ], 400);    
         }
         $customer->name = $input['name'];
         $customer->save();
