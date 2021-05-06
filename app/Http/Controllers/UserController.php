@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\UsersImport;
 use App\Exports\UsersExport;
+use App\Http\Requests\StoreExcelRequest;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use App\Models\User;
@@ -22,24 +23,8 @@ class UserController extends Controller
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function fileImport(Request $request) 
+    public function fileImport(StoreExcelRequest $request) 
     {
-        if(!$request->hasFile('file')){
-            return response()->json([
-                "success" => false,
-                "message" => "Please Upload a file",
-                ]);
-        }
-        $v = Validator::make($request->all(),[
-            'file' => 'mimes:xlsx,xls,csv,txt',
-        ]);
-
-        if($v->fails()){
-            return response()->json([
-                "success" => false,
-                "message" => "File format incorrect",
-                ]);
-        }
 
         $users = Excel::toCollection(new UsersImport, $request->file('file'));
         
@@ -93,14 +78,5 @@ class UserController extends Controller
     public function fileExport() 
     {
         return Excel::download(new UsersExport, 'users-collection.xlsx');
-    }    
-
-    public function delete(Request $request) 
-    {
-        $users = Excel::toCollection(new UsersImport, $request->file('file'));
-        foreach($users[0] as $user){
-            User::where('email',$user[2])->delete();
-        }
-        return back();
-    }    
+    }      
 }

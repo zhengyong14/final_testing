@@ -5,45 +5,32 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreUserRequest;
 use Validator;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\UserResource;
 
 class CustomerController extends Controller
 {
     public function index()
     {   
 
-        $customer = User::paginate(10);
-        return response()->json($customer,200);
+        return UserResource::collection(User::paginate(10));
     }
     
 
     /**
     * Store a newly created resource in storage.
     *
-    * @param  \Illuminate\Http\Request  $request
+    * @param  \App\Http\Requests\StoreUserRequest  $request
     * @return \Illuminate\Http\Response
     */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
     $input = $request->all();
-    $validator = Validator::make($input, [
-        'name' => 'required|min:2',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:4',
-    ]);
-    if($validator->fails()){
-        return response()->json([
-            'success' => false,
-            'message' => 'Input Format Incorrect! '
-        ], 400);        
-    }
+    $input['password'] = bcrypt($input['password']);
     $customer = User::create($input);
-    return response()->json([
-    "success" => true,
-    "message" => "User Added successfully.",
-    "data" => $customer
-    ]);
+    return new UserResource($customer);
     } 
     /**
     * Display the specified resource.
@@ -60,11 +47,7 @@ class CustomerController extends Controller
             'message' => 'User is not available! '
         ], 400);
     }
-    return response()->json([
-    "success" => true,
-    "message" => "User retrieved successfully.",
-    "data" => $customer
-    ]);
+    return new UserResource($customer);
     }
     /**
     * Update the specified resource in storage.
@@ -78,7 +61,7 @@ class CustomerController extends Controller
     
         $input = $request->all();
         $validator = Validator::make($input, [
-        'name' => 'required',
+        'name' => 'required|min:2',
         ]);
         if($validator->fails()){
             return response()->json([
@@ -88,11 +71,7 @@ class CustomerController extends Controller
         }
         $customer->name = $input['name'];
         $customer->save();
-        return response()->json([
-        "success" => true,
-        "message" => "user updated successfully.",
-        "data" => $customer
-        ]);
+        return new UserResource($customer);
     } 
  
        
@@ -112,6 +91,6 @@ class CustomerController extends Controller
     "success" => true,
     "message" => "User deleted successfully.",
     "data" => $customer
-    ]);
+    ],200);
     }
 }

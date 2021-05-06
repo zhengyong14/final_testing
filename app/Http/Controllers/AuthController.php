@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Requests\StoreUserRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Validator;
@@ -31,20 +32,8 @@ class AuthController extends Controller
     /**
      * Signup
      */
-    public function signup(Request $request)
-    {   
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|min:4',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:4',
-        ]);
-   
-        if($validator->fails()){
-            return response()->json([
-                'success' => false,
-                'message' => 'Input Format Incorrect! '
-            ], 400);        
-        }
+    public function signup(StoreUserRequest $request)
+    {  
    
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
