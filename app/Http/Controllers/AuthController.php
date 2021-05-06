@@ -21,7 +21,7 @@ class AuthController extends Controller
         ];
  
         if (auth()->attempt($data)) {
-            $token = auth()->user()->createToken('LaravelPassportRestApiExample')->accessToken;
+            $token = auth()->user()->createToken('LaravelPassportRestApiExampl')->accessToken;
             return response()->json(['token' => $token], 200);
         } else {
             return response()->json(['error' => 'Unauthorised'], 401);

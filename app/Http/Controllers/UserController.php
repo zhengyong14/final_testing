@@ -24,11 +24,28 @@ class UserController extends Controller
     */
     public function fileImport(Request $request) 
     {
-    
+        if(!$request->hasFile('file')){
+            return response()->json([
+                "success" => false,
+                "message" => "Please Upload a file",
+                ]);
+        }
+        $v = Validator::make($request->all(),[
+            'file' => 'mimes:xlsx,xls,csv,txt',
+        ]);
+
+        if($v->fails()){
+            return response()->json([
+                "success" => false,
+                "message" => "File format incorrect",
+                ]);
+        }
+
         $users = Excel::toCollection(new UsersImport, $request->file('file'));
         
         foreach($users[0] as $user){
             // row
+           
             $validate = Validator::make([
                 'name' => $user[1],
                 'email' => $user[2],
@@ -41,7 +58,9 @@ class UserController extends Controller
                 'password' => 'required|min:4',
             ]);
             $check = User::where('email','=',$user[2])->first();
-
+            if (!isset($user[7])){
+                continue;
+            }else {
             if($check && $user[7] == "update"){
             User::where('email',$user[2])->update([
                 'name' => $user[1],
@@ -62,6 +81,7 @@ class UserController extends Controller
             if($check && $user[7] == "delete"){
                 User::where('email',$user[2])->delete();
             }
+        }
     }
         return back();
 

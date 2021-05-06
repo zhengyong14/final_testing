@@ -21,8 +21,9 @@ use App\Http\Controllers\UserController;
 
 Route::post('login',[AuthController::class,'login']);
 Route::post('signup',[AuthController::class,'signup']);
-
-
+Route::middleware('auth:api')->get('/user', function(Request $request) {
+    return $request->user();
+});
 Route::apiResource('customer', CustomerController::class)->middleware('auth:api');
 
 Route::get('file-import-export', [UserController::class, 'fileImportExport']);
