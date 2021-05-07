@@ -14,10 +14,6 @@ use App\Http\Controllers\UserController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
- //   return $request->user();
-//});
-
 
 Route::post('login',[AuthController::class,'login']);
 Route::post('signup',[AuthController::class,'signup']);
@@ -25,7 +21,6 @@ Route::middleware('auth:api')->get('/user', function(Request $request) {
     return $request->user();
 });
 Route::apiResource('customer', CustomerController::class)->middleware('auth:api');
-
 Route::get('file-import-export', [UserController::class, 'fileImportExport']);
 Route::post('file-import', [UserController::class, 'fileImport'])->middleware('auth:api')->name('file-import');
 Route::get('file-export', [UserController::class, 'fileExport'])->middleware('auth:api')->name('file-export');

@@ -15,22 +15,20 @@ class UserController extends Controller
     /**
     * @return \Illuminate\Support\Collection
     */
+
     public function fileImportExport()
     {
-       return view('file-import');
+        return view('file-import');
     }
    
     /**
     * @return \Illuminate\Support\Collection
     */
+
     public function fileImport(StoreExcelRequest $request) 
     {
-
-        $users = Excel::toCollection(new UsersImport, $request->file('file'));
-        
-        foreach($users[0] as $user){
-            // row
-           
+        $users = Excel::toCollection(new UsersImport, $request->file('file'));       
+        foreach ($users[0] as $user) {
             $validate = Validator::make([
                 'name' => $user[1],
                 'email' => $user[2],
@@ -43,34 +41,32 @@ class UserController extends Controller
                 'password' => 'required|min:4',
             ]);
             $check = User::where('email','=',$user[2])->first();
-            if (!isset($user[7])){
+            if (!isset($user[7])) {
                 continue;
-            }else {
-            if($check && $user[7] == "update"){
-            User::where('email',$user[2])->update([
-                'name' => $user[1],
-            ]);
-            }
-            if(!$check && $user[7] == "create"){
-                if($validate->fails()){
-                    continue;
+            } else {
+                if ($check && $user[7] == "update") {
+                    User::where('email',$user[2])->update([
+                        'name' => $user[1],
+                ]);
                 }
-                else{
-                User::create([
-                'name'     => $user[1],
-                'email'    => $user[2],
-                'password' => bcrypt($user[4])
-            ]);
-            }
-            }
-            if($check && $user[7] == "delete"){
-                User::where('email',$user[2])->delete();
+                if (!$check && $user[7] == "create") {
+                    if ($validate->fails()) {
+                        continue;
+                    } else {
+                        User::create ([
+                            'name'     => $user[1],
+                            'email'    => $user[2],
+                            'password' => bcrypt($user[4])
+                ]);
+                }
+                }
+                if($check && $user[7] == "delete"){
+                    User::where('email',$user[2])->delete();
+                }
             }
         }
-    }
         return back();
-
-}
+    }
 
     /**
     * @return \Illuminate\Support\Collection

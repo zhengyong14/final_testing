@@ -14,13 +14,13 @@ class AuthController extends Controller
     /**
      * Signin
      */
+
     public function login(Request $request)
     {
         $data = [
             'email' => $request->email,
             'password' => $request->password
         ];
- 
         if (auth()->attempt($data)) {
             $token = auth()->user()->createToken('LaravelPassportRestApiExampl')->accessToken;
             return response()->json(['token' => $token], 200);
@@ -32,23 +32,19 @@ class AuthController extends Controller
     /**
      * Signup
      */
+
     public function signup(StoreUserRequest $request)
     {  
-   
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-       
+        $user = User::create($input);      
         $token = $user->createToken('LaravelPassportRestApiExampl')->accessToken;
- 
         return response()->json(['token' => $token], 200);
     }
+
     public function userInfo() 
     {
- 
-     $user = auth()->user();
-      
-     return response()->json(['user' => $user], 200);
- 
+        $user = auth()->user();
+        return response()->json(['user' => $user], 200);
     }
 }

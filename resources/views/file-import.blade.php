@@ -24,8 +24,7 @@
             </div>
             <button class="btn btn-primary">Import data</button>
             <a class="btn btn-success" href="{{ route('file-export') }}">Export data</a>
-        </form>
-        
+        </form>       
     </div>
 </body>
 
